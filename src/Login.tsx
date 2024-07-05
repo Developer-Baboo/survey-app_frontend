@@ -5,11 +5,8 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const navigate = useNavigate(); // Initialize useNavigate hook
-
   // =========================================
-
-
-  const handleLogout = () => {
+  /* const handleLogout = () => {
     const token = localStorage.getItem('token');
 
     if (!token) {
@@ -35,15 +32,8 @@ const Login: React.FC = () => {
         navigate('/login'); // Redirect to login page
       })
       .catch((error) => console.error('Error:', error));
-  };
-
-
-
-
-
+  }; */
   // ===================================================
-
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     fetch('http://localhost:8000/api/login', {
@@ -53,18 +43,18 @@ const Login: React.FC = () => {
       },
       body: JSON.stringify({ email, password }),
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Login successful:', data);
-        localStorage.setItem('token', data.access_token);
-        fetchUserInfo(data.access_token); // Fetch user info after login
-      })
-      .catch((error) => console.error('Error:', error));
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log('Login successful:', data);
+      localStorage.setItem('token', data.access_token);
+      fetchUserInfo(data.access_token); // Fetch user info after login
+    })
+    .catch((error) => console.error('Error:', error));
   };
 
   const fetchUserInfo = (token: string) => {
@@ -77,22 +67,23 @@ const Login: React.FC = () => {
     .then((response) => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
+        localStorage.removeItem('token');
       }
-      console.log("DD");
-      
       return response.json();
     })
     .then((data) => {
-      console.log('User info:', data);
+      // console.log('User info:', data);
       // Redirect based on user role
       if (data.role === 'admin') {
-        navigate('/dashboard'); // Redirect to Dashboard.tsx
+        console.log('Redirecting to admin dashboard...');
+        navigate('/admin-dashboard'); // Redirect to Dashboard.tsx
       }else if(data.role === 'super admin'){
+        console.log('Redirecting to super admin dashboard...');
         navigate('/super-admin-dashboard');
       } 
-      
       else if(data.role === 'user'){
-        navigate('/user');
+        console.log('Redirecting to user dashboard...');
+        navigate('/user-dashboard');
       }
     })
     .catch((error) => console.error('Error:', error));

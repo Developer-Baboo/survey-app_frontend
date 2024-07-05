@@ -32,7 +32,7 @@ const UserDashboard: React.FC = () => {
       const data = await response.json();
       console.log('Logout successful:', data);
       localStorage.removeItem('token');
-      navigate('/login'); // Redirect to login page on success
+      navigate('/Login'); // Redirect to login page on success
     } catch (error) {
       console.error('Error:', error);
       // Show an error message to the user, e.g., using an alert or toast
