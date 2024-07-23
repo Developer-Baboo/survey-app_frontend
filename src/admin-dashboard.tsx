@@ -2,43 +2,19 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import { useNavigate } from 'react-router-dom';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faUser, faCog, faSignOutAlt } from 'font-awesome-icon';
 
-const AdminDashboard: React.FC = () => {
-  const adminName = 'Admin'; // Replace with actual admin name
+interface AdminDashboardProps {
+  userName?: string; // Optional userName prop
+}
+
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ userName }) => {
+  // console.log(userName,"username--")
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    const token = localStorage.getItem('token');
-  
-    if (!token) {
-      navigate('/Login');
-      return;
-    }
-  
-    try {
-      const response = await fetch('http://localhost:8000/api/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-  
-      const data = await response.json();
-      console.log('Logout successful:', data);
-      localStorage.removeItem('token');
-      navigate('/login'); // Redirect to login page on success
-    } catch (error) {
-      console.error('Error:', error);
-      // Show an error message to the user, e.g., using an alert or toast
-      alert('Logout failed. Please try again later.');
-    }
-  };
+    localStorage.removeItem('user');
+    navigate('/login'); // Redirect to login page on success
+};
 
   return (
     <div className="dashboard-container">
@@ -50,7 +26,7 @@ const AdminDashboard: React.FC = () => {
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  {adminName}
+                  {userName || 'Admin'} {/* Display username or fallback */}
                 </a>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                   <li><a className="dropdown-item" href="#"> Profile</a></li>
@@ -58,9 +34,9 @@ const AdminDashboard: React.FC = () => {
                   <li><hr className="dropdown-divider" /></li>
                   <li>
                     <a className="dropdown-item" href="#" onClick={handleLogout}>
-                        Logout
+                      Logout
                     </a>
-                </li>
+                  </li>
                 </ul>
               </li>
             </ul>
@@ -68,32 +44,12 @@ const AdminDashboard: React.FC = () => {
         </div>
       </nav>
 
-      {/* Sidebar */}
-      <div className="sidebar">
-        <ul className="list-group">
-          <li className="list-group-item">
-            <a href="#">Dashboard</a>
-          </li>
-          <li className="list-group-item">
-            <a href="#">Analytics</a>
-          </li>
-          <li className="list-group-item dropdown">
-            <a className="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-               Settings
-            </a>
-            <ul className="dropdown-menu">
-              <li><a className="dropdown-item" href="#">General</a></li>
-              <li><a className="dropdown-item" href="#">Security</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
+      {/* ... (Rest of your component code) */}
 
-      {/* Main Content Area */}
       <div className="main-content">
         <div className="container-fluid">
           <h1 className="mt-4">Dashboard</h1>
-          <p>Welcome, {adminName}!</p>
+          <p>Welcome, {userName || 'Admin'}!</p> {/* Display username or fallback */}
         </div>
       </div>
 

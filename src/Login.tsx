@@ -1,92 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from './contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const navigate = useNavigate(); // Initialize useNavigate hook
-  // =========================================
-  /* const handleLogout = () => {
-    const token = localStorage.getItem('token');
+  const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
 
-    if (!token) {
-      navigate('/login');
-      return;
+  if (!authContext) {
+    return null; // or some loading indicator
+  }
+
+  const { login } = authContext;
+
+  const getRoleBasedPath = (role: string) => {
+    // console.log("Determining path for role: ", role);
+    switch (role) {
+      case 'user':
+        return '/user-dashboard';
+      case 'admin':
+        return '/admin-dashboard';
+      case 'super admin':
+        return '/super-admin-dashboard';
+      default:
+        return '/login';
     }
-
-    fetch('http://localhost:8000/api/logout', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Logout successful:', data);
-        localStorage.removeItem('token');
-        navigate('/login'); // Redirect to login page
-      })
-      .catch((error) => console.error('Error:', error));
-  }; */
-  // ===================================================
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    fetch('http://localhost:8000/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log('Login successful:', data);
-      localStorage.setItem('token', data.access_token);
-      fetchUserInfo(data.access_token); // Fetch user info after login
-    })
-    .catch((error) => console.error('Error:', error));
   };
 
-  const fetchUserInfo = (token: string) => {
-    fetch('http://localhost:8000/api/user', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-        localStorage.removeItem('token');
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const userData = await login(email, password);
+      // console.log("Login successful, attempting navigation", userData);
+      const user_Data = localStorage.getItem('user')
+      if (user_Data) {
+        const user = JSON.parse(user_Data);
+        navigate(getRoleBasedPath(user?.role));
       }
-      return response.json();
-    })
-    .then((data) => {
-      // console.log('User info:', data);
-      // Redirect based on user role
-      if (data.role === 'admin') {
-        console.log('Redirecting to admin dashboard...');
-        navigate('/admin-dashboard'); // Redirect to Dashboard.tsx
-      }else if(data.role === 'super admin'){
-        console.log('Redirecting to super admin dashboard...');
-        navigate('/super-admin-dashboard');
-      } 
-      else if(data.role === 'user'){
-        console.log('Redirecting to user dashboard...');
-        navigate('/user-dashboard');
-      }
-    })
-    .catch((error) => console.error('Error:', error));
+    } catch (error) {
+      console.error("Login error: ", error);
+    }
   };
 
   return (
