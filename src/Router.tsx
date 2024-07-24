@@ -9,6 +9,7 @@ import PrivateRoute from './PrivateRoute';
 import ViewSurvey from './pages/survey/view-survey';
 import ReadSurvey from './pages/survey/read-survey';
 import AddSurvey from './pages/survey/add-survey';
+import EditSurvey from './pages/survey/edit-survey';
 import Login from './Login';
 import Signup from './signup';
 import { AuthContext } from './contexts/AuthContext'; // Import AuthContext
@@ -111,6 +112,16 @@ const user_Data = localStorage.getItem('user')
               <PrivateRoute roles={['admin', 'super admin']}>
                 <>
                   <AddSurvey />
+                </>
+              </PrivateRoute>
+            }
+          />
+          <Route
+             path="/surveys/edit/:id"
+            element={
+              <PrivateRoute roles={['super admin']}>
+                <> {/* Wrap SuperAdminDashboard in Fragment */}
+                  <EditSurvey />
                 </>
               </PrivateRoute>
             }

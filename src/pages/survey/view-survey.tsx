@@ -71,7 +71,7 @@ const ViewSurvey: React.FC = () => {
                     <td>{survey.timer_hours}</td>
                     <td>
                       <Link to={`/surveys/read/${survey.id}`} className="btn btn-primary btn-sm mr-2">Read</Link>
-                      <button className="btn btn-warning btn-sm mr-2">Edit</button>
+                      <Link to={`/surveys/edit/${survey.id}`} className="btn btn-warning btn-sm mr-2">Edit</Link>
                       <button className="btn btn-danger btn-sm">Delete</button>
                     </td>
                   </tr>
